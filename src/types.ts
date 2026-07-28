@@ -18,10 +18,6 @@ export type EditModalProps = {
   }) => void;
 };
 
-export type ParkingStateType = {
-  spots: SpotType[];
-};
-
 export type SpotCardProps = {
   spot: SpotType;
   onEdit: (id: number) => void;
