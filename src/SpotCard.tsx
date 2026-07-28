@@ -21,8 +21,6 @@ const SpotCard = ({ spot, onEdit, onRemove }: SpotCardProps) => {
   const styles = STATUS_STYLES[spot.status];
   const canEdit = isEditable(spot.status);
   const canRemove = Boolean(spot.temporary);
-  const vehicleLabel =
-    spot.status === "available" ? "Open bay" : spot.vehicle || "Unassigned";
 
   const handleEdit = () => {
     if (!canEdit) {
@@ -102,7 +100,7 @@ const SpotCard = ({ spot, onEdit, onRemove }: SpotCardProps) => {
               : "text-foreground",
           )}
         >
-          {spot.status === "available" ? "-" : vehicleLabel}
+          {spot.status === "available" ? "-" : spot.vehicle || "Unassigned"}
         </p>
         {spot.temporary && (
           <p className="pt-1 text-xs text-muted-foreground">Temporary bay</p>
