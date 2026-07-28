@@ -1,4 +1,4 @@
-name: Test
+name: Vitest — run unit and component tests on push
 
 on:
   push:

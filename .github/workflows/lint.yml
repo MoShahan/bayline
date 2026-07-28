@@ -1,4 +1,4 @@
-name: Lint
+name: ESLint — check code style and quality on push
 
 on:
   push:
