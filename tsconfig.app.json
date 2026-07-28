@@ -23,7 +23,7 @@
     "noFallthroughCasesInSwitch": true,
 
     "paths": {
-      "@/*": ["./*"] // Or ["./*"] depending on where your lib folder lives
+      "@/*": ["./*"]
     }
   },
   "include": ["src", "lib", "components"]
