@@ -1,5 +1,3 @@
-import type { Dispatch } from "react";
-
 export type SpotStatus = "available" | "occupied" | "reserved";
 
 export type SpotType = {
@@ -10,13 +8,22 @@ export type SpotType = {
 };
 
 export type EditModalProps = {
-  selectedStatus: string | null;
-  setSelectedStatus: Dispatch<React.SetStateAction<string | null>>;
-  handleSave: () => void;
-  vehicleName: string;
-  setVehicleName: Dispatch<React.SetStateAction<string>>;
+  open: boolean;
+  spot: SpotType | null;
+  onOpenChange: (open: boolean) => void;
+  onSave: (payload: {
+    id: number;
+    status: SpotStatus;
+    vehicle: string;
+  }) => void;
 };
 
 export type ParkingStateType = {
   spots: SpotType[];
+};
+
+export type SpotCardProps = {
+  spot: SpotType;
+  onEdit: (id: number) => void;
+  onRemove: (id: number) => void;
 };
