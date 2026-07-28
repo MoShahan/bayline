@@ -96,13 +96,20 @@ describe("parkingSlice", () => {
     expect(store.getState().parking.spots).toEqual(before);
   });
 
-  it("removes a spot by id", () => {
-    const store = createStore();
+  it("removes only temporary spots", () => {
+    const store = createStore([
+      ...sampleSpots,
+      { id: 4, status: "available", vehicle: "", temporary: true },
+    ]);
 
     store.dispatch(removeSpot(2));
-
     expect(store.getState().parking.spots.map((spot) => spot.id)).toEqual([
-      1, 3,
+      1, 2, 3, 4,
+    ]);
+
+    store.dispatch(removeSpot(4));
+    expect(store.getState().parking.spots.map((spot) => spot.id)).toEqual([
+      1, 2, 3,
     ]);
   });
 });
