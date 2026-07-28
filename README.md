@@ -1,4 +1,4 @@
-# Bayline — Parking Deck Control
+# Bayline - Parking Deck Control
 
 A modern React parking management UI for monitoring bay availability, assigning vehicles, and managing temporary spots from a single live board.
 
@@ -73,8 +73,8 @@ Built with **React 19**, **Vite**, **Redux Toolkit**, **Tailwind CSS**, **shadcn
 
 ```bash
 # Clone the repository
-git clone <your-repo-url>
-cd parking-ui
+git clone https://github.com/MoShahan/react-parking-ui.git
+cd react-parking-ui
 
 # Install dependencies
 npm install
@@ -110,6 +110,7 @@ npm run preview
 | `npm run lint:fix` | Run ESLint with auto-fix |
 | `npm test` | Run Vitest once |
 | `npm run test:watch` | Run Vitest in watch mode |
+| `npm run test:coverage` | Run Vitest with coverage |
 
 ## Project structure
 
