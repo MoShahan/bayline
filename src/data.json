@@ -1,0 +1,39 @@
+{
+  "data": [
+    {
+      "status": "available",
+      "id": 1,
+      "vehicle": "Creta"
+    },
+    {
+      "status": "reserved",
+      "id": 2,
+      "vehicle": "Verna"
+    },
+    {
+      "status": "reserved",
+      "id": 3,
+      "vehicle": "Civic"
+    },
+    {
+      "status": "reserved",
+      "id": 4,
+      "vehicle": "Verna"
+    },
+    {
+      "status": "reserved",
+      "id": 5,
+      "vehicle": "Verna"
+    },
+    {
+      "status": "reserved",
+      "id": 6,
+      "vehicle": "Verna"
+    },
+    {
+      "status": "occupied",
+      "id": 7,
+      "vehicle": "Urus"
+    }
+  ]
+}
