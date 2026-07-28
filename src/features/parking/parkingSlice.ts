@@ -1,34 +1,59 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 import data from "../../data.json";
 
-import type { SpotType } from "@/src/types";
+import type { SpotStatus, SpotType } from "@/src/types";
+
+type AddSpotPayload = {
+  status: SpotStatus;
+  vehicle: string;
+  temporary?: boolean;
+};
+
+type UpdateSpotPayload = {
+  id: number;
+  status: SpotStatus;
+  vehicle: string;
+};
 
 const initialState = {
   spots: [...data.data] as SpotType[],
 };
 
+const nextSpotId = (spots: SpotType[]) =>
+  Math.max(0, ...spots.map((spot) => spot.id)) + 1;
+
 const parkingSlice = createSlice({
   name: "parking",
   initialState,
   reducers: {
-    addSpot: (state, action) => {
+    addSpot: (state, action: PayloadAction<AddSpotPayload>) => {
       state.spots.push({
-        id: state.spots.length + 1,
+        id: nextSpotId(state.spots),
         ...action.payload,
       });
     },
 
-    updateSpot: (state, action) => {
-      const index = state.spots.findIndex(
-        (spot) => spot.id === action.payload.id,
-      );
+    updateSpot: (state, action: PayloadAction<UpdateSpotPayload>) => {
+      const { id, status } = action.payload;
+      const vehicle =
+        status === "available" ? "" : action.payload.vehicle.trim();
+
+      if (status === "occupied" && vehicle === "") {
+        return;
+      }
+
+      const index = state.spots.findIndex((spot) => spot.id === id);
       if (index !== -1) {
-        state.spots[index] = { ...state.spots[index], ...action.payload };
+        state.spots[index] = {
+          ...state.spots[index],
+          status,
+          vehicle,
+        };
       }
     },
 
-    removeSpot: (state, action) => {
+    removeSpot: (state, action: PayloadAction<number>) => {
       state.spots = state.spots.filter((spot) => spot.id !== action.payload);
     },
   },
