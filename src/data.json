@@ -3,7 +3,7 @@
     {
       "status": "available",
       "id": 1,
-      "vehicle": "Creta"
+      "vehicle": ""
     },
     {
       "status": "reserved",
@@ -16,24 +16,24 @@
       "vehicle": "Civic"
     },
     {
-      "status": "reserved",
+      "status": "available",
       "id": 4,
-      "vehicle": "Verna"
+      "vehicle": ""
     },
     {
-      "status": "reserved",
+      "status": "occupied",
       "id": 5,
-      "vehicle": "Verna"
+      "vehicle": "Creta"
     },
     {
       "status": "reserved",
       "id": 6,
-      "vehicle": "Verna"
+      "vehicle": "Urus"
     },
     {
       "status": "occupied",
       "id": 7,
-      "vehicle": "Urus"
+      "vehicle": "Swift"
     }
   ]
 }
