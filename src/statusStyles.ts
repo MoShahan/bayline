@@ -6,6 +6,12 @@ export const STATUS_LABELS: Record<SpotStatus, string> = {
   reserved: "Reserved",
 };
 
+export const STATUS_DOT: Record<SpotStatus, string> = {
+  available: "bg-emerald-500",
+  occupied: "bg-amber-500",
+  reserved: "bg-sky-500",
+};
+
 export const STATUS_STYLES: Record<
   SpotStatus,
   {
