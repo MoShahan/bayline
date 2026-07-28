@@ -17,7 +17,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import { STATUSES } from "@/src/constants";
+import { STATUS_LABELS, STATUS_STYLES } from "@/src/statusStyles";
 
 import type { EditModalProps, SpotStatus, SpotType } from "@/src/types";
 
@@ -53,54 +55,88 @@ const EditModalForm = ({ spot, onOpenChange, onSave }: EditModalFormProps) => {
   };
 
   return (
-    <DialogContent>
+    <DialogContent className="sm:max-w-md">
       <DialogHeader>
         <DialogTitle>Edit spot {spot.id}</DialogTitle>
         <DialogDescription>
-          Make changes here. Click save when you&apos;re done.
+          Update this bay&apos;s status and vehicle assignment. Available bays
+          clear any vehicle name automatically.
         </DialogDescription>
       </DialogHeader>
 
-      <div>
-        <Select
-          items={STATUSES}
-          value={status}
-          onValueChange={(value) => {
-            if (value === "available" || value === "occupied") {
-              setStatus(value);
-            }
-          }}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {STATUSES.map((item) => (
-                <SelectItem key={item.value} value={item.value}>
-                  {item.label}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {status !== "available" && (
-        <div>
-          <Input
-            placeholder="Vehicle name"
-            value={vehicleName}
-            onChange={(e) => setVehicleName(e.target.value)}
-          />
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium" htmlFor="spot-status">
+            Status
+          </label>
+          <Select
+            items={STATUSES}
+            value={status}
+            onValueChange={(value) => {
+              if (value === "available" || value === "occupied") {
+                setStatus(value);
+              }
+            }}
+          >
+            <SelectTrigger id="spot-status" className="w-full">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {STATUSES.map((item) => (
+                  <SelectItem key={item.value} value={item.value}>
+                    <span className="inline-flex items-center gap-2">
+                      <span
+                        className={cn(
+                          "size-2 rounded-full",
+                          item.value === "available" && "bg-emerald-500",
+                          item.value === "occupied" && "bg-amber-500",
+                        )}
+                      />
+                      {item.label}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <p
+            className={cn(
+              "inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium",
+              STATUS_STYLES[status].badge,
+            )}
+          >
+            {STATUS_LABELS[status]}
+          </p>
         </div>
-      )}
+
+        {status !== "available" && (
+          <div className="space-y-2">
+            <label className="text-sm font-medium" htmlFor="vehicle-name">
+              Vehicle name
+            </label>
+            <Input
+              id="vehicle-name"
+              placeholder="Vehicle name"
+              value={vehicleName}
+              onChange={(e) => setVehicleName(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              Required when the bay is marked occupied.
+            </p>
+          </div>
+        )}
+      </div>
 
       <DialogFooter>
         <Button variant="outline" onClick={() => onOpenChange(false)}>
           Cancel
         </Button>
-        <Button disabled={!canSave} onClick={handleSave}>
+        <Button
+          disabled={!canSave}
+          onClick={handleSave}
+          className="bg-teal-700 text-white hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500"
+        >
           Save Changes
         </Button>
       </DialogFooter>
