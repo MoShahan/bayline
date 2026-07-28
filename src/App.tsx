@@ -24,7 +24,7 @@ import {
   updateSpot,
 } from "@/src/features/parking/parkingSlice";
 import SpotCard from "@/src/SpotCard";
-import { STATUS_LABELS, STATUS_STYLES } from "@/src/statusStyles";
+import { STATUS_DOT, STATUS_LABELS, STATUS_STYLES } from "@/src/statusStyles";
 
 import type { SpotStatus } from "@/src/types";
 
@@ -67,16 +67,20 @@ function App() {
   const spots = useAppSelector(selectAllSpots);
   const stats = useAppSelector(selectParkingStats);
 
-  const editingSpot =
-    editingSpotId === null
-      ? null
-      : (spots.find((spot) => spot.id === editingSpotId) ?? null);
+  const dialogOpen = editingSpotId !== null;
+  const editingSpot = dialogOpen
+    ? (spots.find((spot) => spot.id === editingSpotId) ?? null)
+    : null;
 
   const atCapacity = spots.length >= MAX_SPOTS;
   const occupancyRate =
     stats.total === 0
       ? 0
       : Math.round(((stats.occupied + stats.reserved) / stats.total) * 100);
+
+  const handleDialogOpenChange = (open: boolean) => {
+    if (!open) setEditingSpotId(null);
+  };
 
   const handleAddSpot = () => {
     if (atCapacity) {
@@ -92,20 +96,7 @@ function App() {
     });
   };
 
-  const handleEdit = (id: number) => {
-    setEditingSpotId(id);
-  };
-
   const handleRemove = (id: number) => {
-    const spot = spots.find((item) => item.id === id);
-
-    if (!spot?.temporary) {
-      toast.error("Spot can't be removed", {
-        description: "Only temporary bays can be deleted from the board.",
-      });
-      return;
-    }
-
     dispatch(removeSpot(id));
     toast.success(`Spot ${id} removed`, {
       description: "The temporary bay was cleared from the deck.",
@@ -118,7 +109,6 @@ function App() {
     vehicle: string;
   }) => {
     dispatch(updateSpot(payload));
-    setEditingSpotId(null);
 
     const statusLabel = STATUS_LABELS[payload.status];
     toast.success(`Spot ${payload.id} updated`, {
@@ -144,7 +134,8 @@ function App() {
               Parking deck control
             </h1>
             <p className="text-base text-muted-foreground text-pretty">
-              Monitor bay availability, update vehicle assignments, and keep temporary spots tidy - all from one live board.
+              Monitor bay availability, update vehicle assignments, and keep
+              temporary spots tidy - all from one live board.
             </p>
           </div>
 
@@ -153,7 +144,6 @@ function App() {
               size="lg"
               onClick={handleAddSpot}
               aria-disabled={atCapacity}
-              className="bg-teal-700 text-white hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500"
             >
               <Plus className="size-4" />
               Add
@@ -166,7 +156,10 @@ function App() {
           </div>
         </header>
 
-        <section aria-label="Parking statistics" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <section
+          aria-label="Parking statistics"
+          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+        >
           {STAT_META.map(({ key, label, hint, icon: Icon }) => {
             const value = stats[key];
             const statusStyle =
@@ -228,12 +221,7 @@ function App() {
                     className="inline-flex items-center gap-1.5"
                   >
                     <span
-                      className={cn(
-                        "size-2.5 rounded-full",
-                        status === "available" && "bg-emerald-500",
-                        status === "occupied" && "bg-amber-500",
-                        status === "reserved" && "bg-sky-500",
-                      )}
+                      className={cn("size-2.5 rounded-full", STATUS_DOT[status])}
                     />
                     {STATUS_LABELS[status]}
                   </span>
@@ -247,7 +235,7 @@ function App() {
               <SpotCard
                 key={spot.id}
                 spot={spot}
-                onEdit={handleEdit}
+                onEdit={setEditingSpotId}
                 onRemove={handleRemove}
               />
             ))}
@@ -255,18 +243,11 @@ function App() {
         </section>
       </div>
 
-      <Dialog
-        open={editingSpotId !== null}
-        onOpenChange={(open) => {
-          if (!open) setEditingSpotId(null);
-        }}
-      >
+      <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
         <EditModal
-          open={editingSpotId !== null}
+          open={dialogOpen}
           spot={editingSpot}
-          onOpenChange={(open) => {
-            if (!open) setEditingSpotId(null);
-          }}
+          onOpenChange={handleDialogOpenChange}
           onSave={handleSave}
         />
       </Dialog>

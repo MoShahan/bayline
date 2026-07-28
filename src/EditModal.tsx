@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { STATUSES } from "@/src/constants";
-import { STATUS_LABELS, STATUS_STYLES } from "@/src/statusStyles";
+import { STATUS_DOT } from "@/src/statusStyles";
 
 import type { EditModalProps, SpotStatus, SpotType } from "@/src/types";
 
@@ -89,8 +89,7 @@ const EditModalForm = ({ spot, onOpenChange, onSave }: EditModalFormProps) => {
                       <span
                         className={cn(
                           "size-2 rounded-full",
-                          item.value === "available" && "bg-emerald-500",
-                          item.value === "occupied" && "bg-amber-500",
+                          STATUS_DOT[item.value],
                         )}
                       />
                       {item.label}
@@ -100,14 +99,6 @@ const EditModalForm = ({ spot, onOpenChange, onSave }: EditModalFormProps) => {
               </SelectGroup>
             </SelectContent>
           </Select>
-          <p
-            className={cn(
-              "inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium",
-              STATUS_STYLES[status].badge,
-            )}
-          >
-            {STATUS_LABELS[status]}
-          </p>
         </div>
 
         {status !== "available" && (
@@ -132,11 +123,7 @@ const EditModalForm = ({ spot, onOpenChange, onSave }: EditModalFormProps) => {
         <Button variant="outline" onClick={() => onOpenChange(false)}>
           Cancel
         </Button>
-        <Button
-          disabled={!canSave}
-          onClick={handleSave}
-          className="bg-teal-700 text-white hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500"
-        >
+        <Button disabled={!canSave} onClick={handleSave}>
           Save Changes
         </Button>
       </DialogFooter>
