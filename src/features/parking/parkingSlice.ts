@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-import data from "../../data.json";
+import data from "@/src/data.json";
 
 import type { SpotStatus, SpotType } from "@/src/types";
 
@@ -54,7 +54,9 @@ const parkingSlice = createSlice({
     },
 
     removeSpot: (state, action: PayloadAction<number>) => {
-      state.spots = state.spots.filter((spot) => spot.id !== action.payload);
+      state.spots = state.spots.filter(
+        (spot) => !(spot.id === action.payload && spot.temporary),
+      );
     },
   },
 });
