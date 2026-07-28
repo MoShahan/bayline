@@ -2,13 +2,21 @@ import { configureStore } from "@reduxjs/toolkit";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
-import { describe, expect, it } from "vitest";
+import { toast } from "sonner";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "@/src/App";
 import { MAX_SPOTS } from "@/src/constants";
 import parkingReducer from "@/src/features/parking/parkingSlice";
 
 import type { SpotType } from "@/src/types";
+
+vi.mock("sonner", () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}));
 
 const sampleSpots: SpotType[] = [
   { id: 1, status: "available", vehicle: "" },
@@ -33,6 +41,10 @@ const renderApp = (spots: SpotType[] = sampleSpots) => {
 };
 
 describe("App", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("shows parking stats for the current spots", () => {
     renderApp();
 
@@ -56,18 +68,34 @@ describe("App", () => {
       temporary: true,
     });
     expect(screen.getByText("Spot 6")).toBeInTheDocument();
+    expect(toast.success).toHaveBeenCalledWith(
+      "Spot added",
+      expect.objectContaining({
+        description: "A temporary available bay was created.",
+      }),
+    );
   });
 
-  it("disables Add when the spot limit is reached", () => {
+  it("shows an error toast when adding past the spot limit", async () => {
+    const user = userEvent.setup();
     const fullSpots = Array.from({ length: MAX_SPOTS }, (_, index) => ({
       id: index + 1,
       status: "available" as const,
       vehicle: "",
     }));
 
-    renderApp(fullSpots);
+    const { store } = renderApp(fullSpots);
 
-    expect(screen.getByRole("button", { name: "Add" })).toBeDisabled();
+    await user.click(screen.getByRole("button", { name: "Add" }));
+
+    expect(store.getState().parking.spots).toHaveLength(MAX_SPOTS);
+    expect(toast.error).toHaveBeenCalledWith(
+      "Parking deck is full",
+      expect.objectContaining({
+        description: expect.stringContaining(String(MAX_SPOTS)),
+      }),
+    );
+    expect(toast.success).not.toHaveBeenCalled();
   });
 
   it("removes a temporary spot", async () => {
@@ -88,6 +116,12 @@ describe("App", () => {
       8,
     );
     expect(screen.queryByText("Spot 8")).not.toBeInTheDocument();
+    expect(toast.success).toHaveBeenCalledWith(
+      "Spot 8 removed",
+      expect.objectContaining({
+        description: "The temporary bay was cleared from the deck.",
+      }),
+    );
   });
 
   it("opens the edit modal and saves changes", async () => {
@@ -113,5 +147,11 @@ describe("App", () => {
       status: "available",
       vehicle: "",
     });
+    expect(toast.success).toHaveBeenCalledWith(
+      "Spot 1 updated",
+      expect.objectContaining({
+        description: "Bay marked available and vehicle cleared.",
+      }),
+    );
   });
 });

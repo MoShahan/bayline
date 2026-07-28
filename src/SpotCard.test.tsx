@@ -1,10 +1,18 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { toast } from "sonner";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import SpotCard from "@/src/SpotCard";
 
 import type { SpotType } from "@/src/types";
+
+vi.mock("sonner", () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}));
 
 const baseSpot: SpotType = {
   id: 1,
@@ -13,13 +21,17 @@ const baseSpot: SpotType = {
 };
 
 describe("SpotCard", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("renders spot details for an available spot", () => {
     render(
       <SpotCard spot={baseSpot} onEdit={vi.fn()} onRemove={vi.fn()} />,
     );
 
     expect(screen.getByText("Spot 1")).toBeInTheDocument();
-    expect(screen.getByText("available")).toBeInTheDocument();
+    expect(screen.getByText("Available")).toBeInTheDocument();
     expect(screen.getByText("-")).toBeInTheDocument();
   });
 
@@ -35,7 +47,7 @@ describe("SpotCard", () => {
     expect(screen.getByText("Creta")).toBeInTheDocument();
   });
 
-  it("allows editing available and occupied spots", async () => {
+  it("allows editing available spots and explains reserved locks", async () => {
     const user = userEvent.setup();
     const onEdit = vi.fn();
 
@@ -46,6 +58,8 @@ describe("SpotCard", () => {
     await user.click(screen.getByRole("button", { name: "Edit" }));
     expect(onEdit).toHaveBeenCalledWith(1);
 
+    onEdit.mockClear();
+
     rerender(
       <SpotCard
         spot={{ ...baseSpot, status: "reserved", vehicle: "Civic" }}
@@ -54,10 +68,22 @@ describe("SpotCard", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: "Edit" })).toBeDisabled();
+    const editButton = screen.getByRole("button", { name: "Edit" });
+    expect(editButton).toBeEnabled();
+    expect(editButton).toHaveAttribute("aria-disabled", "true");
+
+    await user.click(editButton);
+
+    expect(onEdit).not.toHaveBeenCalled();
+    expect(toast.error).toHaveBeenCalledWith(
+      "Can't edit this bay",
+      expect.objectContaining({
+        description: expect.stringContaining("Reserved"),
+      }),
+    );
   });
 
-  it("only allows removing temporary spots", async () => {
+  it("explains why non-temporary spots can't be removed", async () => {
     const user = userEvent.setup();
     const onRemove = vi.fn();
 
@@ -65,7 +91,19 @@ describe("SpotCard", () => {
       <SpotCard spot={baseSpot} onEdit={vi.fn()} onRemove={onRemove} />,
     );
 
-    expect(screen.getByRole("button", { name: "Remove" })).toBeDisabled();
+    const removeButton = screen.getByRole("button", { name: "Remove" });
+    expect(removeButton).toBeEnabled();
+    expect(removeButton).toHaveAttribute("aria-disabled", "true");
+
+    await user.click(removeButton);
+
+    expect(onRemove).not.toHaveBeenCalled();
+    expect(toast.error).toHaveBeenCalledWith(
+      "Spot can't be removed",
+      expect.objectContaining({
+        description: expect.stringContaining("temporary"),
+      }),
+    );
 
     rerender(
       <SpotCard
