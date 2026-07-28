@@ -1,67 +1,52 @@
-import { useMemo, useState } from "react";
-
+import { useState } from "react";
 import "./App.css";
+import { useDispatch, useSelector } from "react-redux";
+
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 
 import { MAX_SPOTS } from "./constants";
-import data from "./data.json";
 import EditModal from "./EditModal";
+import {
+  selectAllSpots,
+  selectParkingStats,
+} from "./features/parking/parkingSelectors";
 
+import type { AppDispatch } from "./app/store";
 import type { SpotStatus, SpotType } from "./types";
 
 function App() {
-  const [spots, setSpots] = useState<SpotType[]>(data.data as SpotType[]);
-
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
   const [vehicleName, setVehicleName] = useState<string>("");
 
-  const stats = useMemo(() => {
-    return spots.reduce(
-      (acc, spot) => {
-        acc[spot.status] = (acc[spot.status] || 0) + 1;
-        acc.total += 1;
-        return acc;
-      },
-      { available: 0, occupied: 0, reserved: 0, total: 0 },
-    );
-  }, [spots]);
+  const dispatch = useDispatch<AppDispatch>();
+
+  const spots = useSelector(selectAllSpots);
+  const stats = useSelector(selectParkingStats);
 
   const handleAddSpot = () => {
     if (spots.length >= MAX_SPOTS) return;
-
-    setSpots([
-      ...spots,
-      {
-        id: spots.length + 1,
-        status: "available",
-        vehicle: "",
-        temporary: true,
-      },
-    ]);
+    dispatch({
+      type: "parking/addSpot",
+      payload: { status: "available", vehicle: "", temporary: true },
+    });
   };
 
   const isEditable = (status: SpotStatus) =>
     status === "available" || status === "occupied";
 
   const handleEdit = (id: number) => () => {
-    setSpots(
-      spots.map((spot) =>
-        spot.id === id
-          ? {
-              ...spot,
-              status: (selectedStatus || "available") as SpotStatus,
-              vehicle: vehicleName,
-            }
-          : spot,
-      ),
-    );
+    dispatch({
+      type: "parking/updateSpot",
+      payload: { id, status: selectedStatus, vehicle: vehicleName },
+    });
+
     setSelectedStatus(null);
     setVehicleName("");
   };
 
   const handleRemove = (id: number) => () => {
-    setSpots(spots.filter((spot) => spot.id !== id));
+    dispatch({ type: "parking/removeSpot", payload: id });
   };
 
   return (

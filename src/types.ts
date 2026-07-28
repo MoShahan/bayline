@@ -16,3 +16,7 @@ export type EditModalProps = {
   vehicleName: string;
   setVehicleName: Dispatch<React.SetStateAction<string>>;
 };
+
+export type ParkingStateType = {
+  spots: SpotType[];
+};
