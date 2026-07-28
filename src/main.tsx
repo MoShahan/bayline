@@ -4,10 +4,10 @@ import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 
 import { Toaster } from "@/components/ui/sonner";
+import { store } from "@/src/app/store";
+import { AppRouter } from "@/src/AppRouter";
 
 import "./index.css";
-import { store } from "./app/store.ts";
-import { AppRouter } from "./AppRouter.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
