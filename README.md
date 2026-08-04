@@ -161,4 +161,4 @@ Coverage includes the parking slice/selectors, SpotCard, EditModal, App flows, a
 
 ## License
 
-Private project (`"private": true` in `package.json`). Update this section if you publish or open-source the repo.
+Private project (`"private": true` in `package.json`).
