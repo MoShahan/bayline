@@ -2,6 +2,8 @@
 
 A modern React parking management UI for monitoring bay availability, assigning vehicles, and managing temporary spots from a single live board.
 
+**Live demo:** [https://moshahan.github.io/bayline/](https://moshahan.github.io/bayline/)
+
 ![Bayline dashboard](docs/screenshots/dashboard.png)
 
 ## Overview
@@ -73,8 +75,8 @@ Built with **React 19**, **Vite**, **Redux Toolkit**, **Tailwind CSS**, **shadcn
 
 ```bash
 # Clone the repository
-git clone https://github.com/MoShahan/react-parking-ui.git
-cd react-parking-ui
+git clone https://github.com/MoShahan/bayline.git
+cd bayline
 
 # Install dependencies
 npm install
@@ -115,7 +117,8 @@ npm run preview
 ## Project structure
 
 ```text
-parking-ui/
+bayline/
+├── .github/workflows/      # Lint, test, and GitHub Pages deploy
 ├── components/ui/          # shadcn UI primitives (button, card, dialog, …)
 ├── docs/screenshots/       # README screenshots
 ├── lib/                    # Shared utilities (e.g. cn)
@@ -158,6 +161,23 @@ npm test
 ```
 
 Coverage includes the parking slice/selectors, SpotCard, EditModal, App flows, and router redirects.
+
+## Deployment
+
+The demo is published to **GitHub Pages** at [https://moshahan.github.io/bayline/](https://moshahan.github.io/bayline/).
+
+Pushes to `main` (and manual runs from the Actions tab) trigger [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml). That workflow:
+
+1. Installs dependencies with `npm ci`
+2. Builds with `GITHUB_PAGES=true` so Vite uses the `/bayline/` base path
+3. Copies `dist/index.html` to `dist/404.html` so unknown paths still load the SPA (and redirect home)
+4. Uploads `dist/` and deploys it with the official GitHub Pages actions
+
+### First-time GitHub Pages setup
+
+In the repository: **Settings → Pages → Build and deployment → Source → GitHub Actions**.
+
+After the first successful deploy, the site is available at `https://moshahan.github.io/bayline/`.
 
 ## License
 

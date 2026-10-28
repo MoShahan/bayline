@@ -9,10 +9,12 @@ import { AppRouter } from "@/src/AppRouter";
 
 import "./index.css";
 
+const basename = import.meta.env.BASE_URL.replace(/\/$/, "");
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>
-      <BrowserRouter>
+      <BrowserRouter basename={basename}>
         <AppRouter />
         <Toaster />
       </BrowserRouter>

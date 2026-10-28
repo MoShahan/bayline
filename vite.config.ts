@@ -7,6 +7,8 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vite.dev/config/
 export default defineConfig({
+  // GitHub Pages project URL: https://moshahan.github.io/bayline/
+  base: process.env.GITHUB_PAGES === "true" ? "/bayline/" : "/",
   plugins: [
     react(),
     babel({ presets: [reactCompilerPreset()] }),
